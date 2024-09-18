@@ -64,6 +64,7 @@ export const SignUpPage = () => {
                     [e.target.name]: e.target.value,
                   })
                 }
+                
               />
             )}
             {!showPassword ? (
@@ -106,10 +107,10 @@ const Container = styled.div`
       padding: 0 25rem;
     }
     h4 {
-      margin-top: -1.5rem;
+      
     }
     h6 {
-      margin-top: -1.5rem;
+     
     }
   }
   .form {
@@ -120,6 +121,7 @@ const Container = styled.div`
     input {
       color: black;
       padding: 1.5rem;
+      margin-left: 20rem;
       font-size: 1.2rem;
       width: 45rem;
       &:focus {
