@@ -1,10 +1,30 @@
 import styled from "styled-components";
+import { useState } from "react";
+import { createUserWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+
+import { firebaseAuth } from "../utils/firebase";
 import BackgroundImage from "../components/BackgroundImage";
 import Header from "../components/Header";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [formValues, setFormValues] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
+
+  const handleSignIn = async () => {
+    try {
+      const { email, password } = formValues;
+      await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  onAuthStateChanged(firebaseAuth, (currentUser) => {
+    if (currentUser) navigate("/");
+  })
+
   return (
     <Container>
       <BackgroundImage />
@@ -18,22 +38,39 @@ export const SignUpPage = () => {
               Raedy to watch? Enter your email to create or restart menbership
             </h6>
           </div>
-          <div className="form"> 
-            {
-              showPassword ? (
-                <input type="password" name="password" placeholder="password" />
-              ) : (
-                <input type="email" name="email" placeholder="email ..." />
-              )
-            }
-            {
-              !showPassword ? (
-                <button onClick={()=>setShowPassword(true)}>Get Started</button>
-              ) : (
-                <button onClick={()=>setShowPassword(false)}>Sign Up</button>
-              )
-            }
-            
+          <div className="form">
+            {showPassword ? (
+              <input
+                type="password"
+                name="password"
+                placeholder="password"
+                value={formValues.password}
+                onChange={(e) =>
+                  setFormValues({
+                    ...formValues,
+                    [e.target.name]: e.target.value,
+                  })
+                }
+              />
+            ) : (
+              <input
+                type="email"
+                name="email"
+                placeholder="email ..."
+                value={formValues.email}
+                onChange={(e) =>
+                  setFormValues({
+                    ...formValues,
+                    [e.target.name]: e.target.value,
+                  })
+                }
+              />
+            )}
+            {!showPassword ? (
+              <button onClick={() => setShowPassword(true)}>Get Started</button>
+            ) : (
+              <button onClick={handleSignIn}>Sign Up</button>
+            )}
           </div>
         </div>
       </div>
@@ -69,16 +106,17 @@ const Container = styled.div`
       padding: 0 25rem;
     }
     h4 {
-    margin-top: -1.5rem;
+      margin-top: -1.5rem;
     }
     h6 {
-     margin-top: -1.5rem;
+      margin-top: -1.5rem;
     }
   }
-      .form {
+  .form {
     display: grid;
     // width: 60%;
-    grid-template-columns: ${({showPassword})=>showPassword? "1fr 1fr" : "2fr 1fr"};
+    grid-template-columns: ${({ showPassword }) =>
+      showPassword ? "1fr 1fr" : "2fr 1fr"};
     input {
       color: black;
       padding: 1.5rem;
@@ -96,7 +134,7 @@ const Container = styled.div`
       color: white;
       font-size: 1.05rem;
       width: 10rem;
-      font-weight:bolder
+      font-weight: bolder;
     }
   }
 `;

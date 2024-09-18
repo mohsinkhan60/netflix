@@ -1,8 +1,28 @@
 import styled from "styled-components";
 import BackgroundImage from "../components/BackgroundImage";
 import Header from "../components/Header";
+import { onAuthStateChanged, signInWithEmailAndPassword} from "firebase/auth";
+
+import { firebaseAuth } from "../utils/firebase";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const LoginPage = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(firebaseAuth, email, password);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  onAuthStateChanged(firebaseAuth, (currentUser) => {
+      if (currentUser) navigate("/");
+    })
+
   return (
     <Wrapper>
       <BackgroundImage />
@@ -17,12 +37,16 @@ export const LoginPage = () => {
               <input
                 type="text"
                 placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <input
                 type="password"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
-              <button>Login</button>
+              <button onClick={handleLogin}>Login</button>
             </div>
           </div>
         </div>
